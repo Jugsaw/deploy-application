@@ -22,9 +22,12 @@ jobs:
           registry: harbor.jugsaw.co
           username: ${{ secrets.JUGSAW_USERNAME }}
           password: ${{ secrets.JUGSAW_TOKEN }}
+      - name: set release date
+        run: |
+          echo "RELEASE_DATE=$(date +%d-%m-%y_%T)"
       -
         name: Build and push
         uses: docker/build-push-action@v4
         with:
           push: true
-          tags: ${{ secrets.JUGSAW_USERNAME }}/${{ env.NOW }}
+          tags: ${{ secrets.JUGSAW_USERNAME }}/${{ env.RELEASE_DATE }}
