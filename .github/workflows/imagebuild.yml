@@ -24,7 +24,7 @@ jobs:
           password: ${{ secrets.JUGSAW_TOKEN }}
       - name: set release date
         run: |
-          echo "RELEASE_DATE=$(date +%d-%m-%y_%T)" >> ${GITHUB_ENV}
+          echo "RELEASE_DATE=$(date +%d-%m-%y_%H-%M-%S)" >> ${GITHUB_ENV}
       -
         name: Build and push
         uses: docker/build-push-action@v4
