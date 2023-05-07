@@ -29,5 +29,6 @@ jobs:
         name: Build and push
         uses: docker/build-push-action@v4
         with:
+          registry: harbor.jugsaw.co
           push: true
           tags: jugsaw/${{ env.RELEASE_DATE }}
