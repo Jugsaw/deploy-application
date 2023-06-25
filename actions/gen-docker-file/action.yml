@@ -1,0 +1,8 @@
+name: 'Generate Dockerfile'
+description: 'Generate Dockerfile for Jugsaw Application'
+outputs:
+  dockerfile:
+    description: 'The generated Dockerfile'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'

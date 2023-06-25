@@ -1,0 +1,35 @@
+name: 'Deploy Jugsaw Application'
+description: 'Deploy jugsaw applications to the cloud!'
+inputs:
+  token:
+    description: "The token to upload your application. You can find it in your profile page after logging in https://jugsaw.co"
+    required: true
+  registry:
+    description: "The url endpoint of the Jugsaw registry server."
+    required: false
+    default: 'https://harbor.jugsaw.co'
+  user:
+    description: "The user name at Jugsaw. The repository owner's name is used by default."
+    required: false
+    default: ${{ github.repository_owner}}
+  app:
+    description: "The name of the application to deploy. If not set, the value will be inferred from the basename of `github.workspace`."
+    required: false
+outputs:
+  app:
+    description: 'The id of the deployed applications (`user_name/app_name@sha256:xxx` ). An empty string is returned if an application is deployed unsuccessfully.'
+    value: ${{ steps.deploy-to-jugsaw.outputs.random-number }}
+runs:
+  using: 'composite'
+  steps:
+    - id: extract-app-name
+      run: echo "app=`basename ${{ inputs.app || github.workspace }}" >> $GITHUB_OUTPUT
+      shell: bash
+    - id: gen-docker-file
+      uses: ./actions/gen-docker-file
+    - id: deploy-to-jugsaw
+      run: |
+        echo "dockerfile=${{ steps.gen-docker-file.outputs.dockerfile}}"
+        echo "app=${{ inputs.user }}/${{ steps.extract-app-name.outputs.app }}@sha256:xxx" 
+        echo "app=${{ inputs.user }}/${{ steps.extract-app-name.outputs.app }}@sha256:xxx" >> $GITHUB_OUTPUT
+      shell: bash
