@@ -42,6 +42,7 @@ runs:
     - id: extract-docker-meta
       uses: docker/metadata-action@v4
       with:
+        images: ${{ steps.extract-name.outputs.image }}
         tags: ${{ inputs.tags }}
     - id: deploy-to-jugsaw
       run: |
