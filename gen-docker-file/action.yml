@@ -5,4 +5,4 @@ outputs:
     description: 'The generated Dockerfile'
 runs:
   using: 'docker'
-  image: 'Dockerfile'
+  image: 'gen-docker-file/Dockerfile'
