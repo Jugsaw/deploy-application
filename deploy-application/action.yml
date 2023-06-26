@@ -11,14 +11,15 @@ inputs:
   user:
     description: "The user name at Jugsaw. The repository owner's name is used by default."
     required: false
-    default: ""
   app:
     description: "The name of the application to deploy. If not set, the value will be inferred from the basename of `github.workspace`."
     required: false
   dir:
     description: "The directory to the application source code"
     required: false
-    default: ""
+  tags:
+    description: "The tags of applications"
+    required: false
 outputs:
   app:
     description: 'The id of the deployed applications (`user_name/app_name@sha256:xxx` ). An empty string is returned if an application is deployed unsuccessfully.'
@@ -26,16 +27,25 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - id: gen-docker-file
+    - id: extract-name
+      run: |
+        user=${{ inputs.user || github.repository_owner }}
+        app=`basename ${{ inputs.app || github.workspace }}`
+        echo "app=$app" >> $GITHUB_OUTPUT
+        echo "user=$user" >> $GITHUB_OUTPUT
+        echo "image=$user/$app" >> $GITHUB_OUTPUT
+      shell: bash
+    - id: extract-application-meta
       uses: Jugsaw/github-actions/extract-application-meta@develop
       with:
         dir: ${{ inputs.dir }}
-    - id: extract-name
-      run: |
-        echo "app=`basename ${{ inputs.app || github.workspace }}`" >> $GITHUB_OUTPUT
-        echo "user=${{ inputs.user || github.repository_owner }}" >> $GITHUB_OUTPUT
-      shell: bash
+    - id: extract-docker-meta
+      uses: docker/metadata-action@v4
+      with:
+        tags: ${{ inputs.tags }}
     - id: deploy-to-jugsaw
       run: |
-        echo "app=${{ steps.extract-name.outputs.user }}/${{ steps.extract-name.outputs.app }}@sha256:xxx" >> $GITHUB_OUTPUT
+        echo "docker tags: ${{ steps.extract-docker-meta.outputs.tags }}"
+        echo "docker labels: ${{ steps.extract-docker-meta.outputs.labels }}"
+        echo "app=${{ steps.extract-name.outputs.image }}@sha256:xxx" >> $GITHUB_OUTPUT
       shell: bash
