@@ -26,6 +26,8 @@ runs:
       run: echo "app=`basename ${{ inputs.app || github.workspace }}`" >> $GITHUB_OUTPUT
       shell: bash
     - uses: actions/checkout@v3
+      with:
+        ref: 'develop'
     - id: gen-docker-file
       uses: ./actions/gen-docker-file
     - id: deploy-to-jugsaw
