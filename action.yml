@@ -25,6 +25,7 @@ runs:
     - id: extract-app-name
       run: echo "app=`basename ${{ inputs.app || github.workspace }}`" >> $GITHUB_OUTPUT
       shell: bash
+    - uses: actions/checkout@v3
     - id: gen-docker-file
       uses: ./actions/gen-docker-file
     - id: deploy-to-jugsaw
