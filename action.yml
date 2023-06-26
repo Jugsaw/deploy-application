@@ -23,7 +23,7 @@ runs:
   using: 'composite'
   steps:
     - id: extract-app-name
-      run: echo "app=`basename ${{ inputs.app || github.workspace }}" >> $GITHUB_OUTPUT
+      run: echo "app=`basename ${{ inputs.app || github.workspace }}`" >> $GITHUB_OUTPUT
       shell: bash
     - id: gen-docker-file
       uses: ./actions/gen-docker-file
