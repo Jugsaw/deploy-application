@@ -27,7 +27,7 @@ runs:
       shell: bash
     - uses: actions/checkout@v3
       with:
-        ref: 'develop'
+        ref: develop
     - id: gen-docker-file
       uses: ./actions/gen-docker-file
     - id: deploy-to-jugsaw
