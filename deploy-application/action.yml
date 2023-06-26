@@ -7,7 +7,7 @@ inputs:
   registry:
     description: "The url endpoint of the Jugsaw registry server."
     required: false
-    default: 'https://harbor.jugsaw.co'
+    default: 'harbor.jugsaw.co'
   user:
     description: "The user name at Jugsaw. The repository owner's name is used by default."
     required: false
@@ -40,10 +40,6 @@ runs:
       uses: Jugsaw/github-actions/extract-application-meta@develop
       with:
         dir: ${{ inputs.dir }}
-    - id: write-dockerfile
-      working-directory: ${{ inputs.dir }}
-      run: echo "${{ steps.extract-application-meta.outputs.dockerfile }}" >> Dockerfile
-      shell: bash
     - id: extract-docker-meta
       uses: docker/metadata-action@v4
       with:
@@ -54,7 +50,17 @@ runs:
           jugsaw.demos=${{ steps.extract-application-meta.outputs.demos }}
           jugsaw.types=${{ steps.extract-application-meta.outputs.types }}
           jugsaw.readme=${{ steps.extract-application-meta.outputs.readme }}
-    - id: deploy-to-jugsaw
+    - name: Write Dockerfile
+      working-directory: ${{ inputs.dir }}
+      run: echo "${{ steps.extract-application-meta.outputs.dockerfile }}" >> Dockerfile
+      shell: bash
+    - name: Login to Jugsaw
+      uses: docker/login-action@v2
+      with:
+        registry: ${{ inputs.registry }}
+        username: jugsaw@${{ steps.extract-name.outputs.app }}
+        password: ${{ secrets.JUGSAW_TOKEN }}
+    - name: Deploy application to Jugsaw
       working-directory: ${{ inputs.dir }}
       run: |
         echo "docker tags: ${{ steps.extract-docker-meta.outputs.tags }}"
