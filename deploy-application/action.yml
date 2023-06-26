@@ -15,6 +15,10 @@ inputs:
   app:
     description: "The name of the application to deploy. If not set, the value will be inferred from the basename of `github.workspace`."
     required: false
+  dir:
+    description: "The directory to the application source code"
+    required: false
+    default: ""
 outputs:
   app:
     description: 'The id of the deployed applications (`user_name/app_name@sha256:xxx` ). An empty string is returned if an application is deployed unsuccessfully.'
@@ -23,13 +27,15 @@ runs:
   using: 'composite'
   steps:
     - id: gen-docker-file
-      uses: Jugsaw/github-actions/gen-docker-file@develop
-    - id: extract-app-name
-      run: echo "app=`basename ${{ inputs.app || github.workspace }}`" >> $GITHUB_OUTPUT
+      uses: Jugsaw/github-actions/extract-application-meta@develop
+      with:
+        dir: ${{ inputs.dir }}
+    - id: extract-name
+      run: |
+        echo "app=`basename ${{ inputs.app || github.workspace }}`" >> $GITHUB_OUTPUT
+        echo "user=${{ inputs.user || github.repository_owner }}" >> $GITHUB_OUTPUT
       shell: bash
     - id: deploy-to-jugsaw
       run: |
-        echo "dockerfile=${{ steps.gen-docker-file.outputs.dockerfile}}"
-        echo "app=${{ inputs.user }}/${{ steps.extract-app-name.outputs.app }}@sha256:xxx" 
-        echo "app=${{ inputs.user }}/${{ steps.extract-app-name.outputs.app }}@sha256:xxx" >> $GITHUB_OUTPUT
+        echo "app=${{ steps.extract-name.outputs.user }}/${{ steps.extract-name.outputs.app }}@sha256:xxx" >> $GITHUB_OUTPUT
       shell: bash

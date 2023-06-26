@@ -1,5 +1,10 @@
 name: 'Generate Dockerfile'
 description: 'Generate Dockerfile for Jugsaw Application'
+inputs:
+  dir:
+    description: "The directory to the application source code"
+    required: false
+    default: ""
 outputs:
   dockerfile:
     description: 'The generated Dockerfile'
