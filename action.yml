@@ -3,7 +3,8 @@ description: 'Deploy jugsaw applications to the cloud!'
 inputs:
   token:
     description: "The token to upload your application. You can find it in your profile page after logging in https://jugsaw.co"
-    required: true
+    required: false
+    default: ${{ secrets.JUGSAW_TOKEN }}
   registry:
     description: "The url endpoint of the Jugsaw registry server."
     required: false
@@ -18,7 +19,7 @@ inputs:
 outputs:
   app:
     description: 'The id of the deployed applications (`user_name/app_name@sha256:xxx` ). An empty string is returned if an application is deployed unsuccessfully.'
-    value: ${{ steps.deploy-to-jugsaw.outputs.random-number }}
+    value: ${{ steps.deploy-to-jugsaw.outputs.app }}
 runs:
   using: 'composite'
   steps:
