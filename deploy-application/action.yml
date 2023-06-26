@@ -3,7 +3,7 @@ description: 'Deploy jugsaw applications to the cloud!'
 inputs:
   token:
     description: "The token to upload your application. You can find it in your profile page after logging in https://jugsaw.co"
-    default: ""
+    required: true
   registry:
     description: "The url endpoint of the Jugsaw registry server."
     required: false
@@ -22,11 +22,8 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - id: debug
-      run: ls .
-      shell: bash
     - id: gen-docker-file
-      uses: ./actions/gen-docker-file
+      uses: Jugsaw/github-actions/gen-docker-file@develop
     - id: extract-app-name
       run: echo "app=`basename ${{ inputs.app || github.workspace }}`" >> $GITHUB_OUTPUT
       shell: bash
