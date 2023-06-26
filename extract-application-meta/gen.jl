@@ -5,6 +5,9 @@ cd(get(ENV, "INPUT_DIR", "."))
 Pkg.activate(".")
 Pkg.instantiate()
 
+println("pwd: $(pwd())")
+println("ls: $(readdir())")
+
 include("app.jl")
 
 using Jugsaw.Template: docker_config
