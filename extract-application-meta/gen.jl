@@ -1,9 +1,11 @@
 using Pkg
 
+# cd(get(ENV, "INPUT_DIR", "."))
+
 # Pkg.activate(".")
 # Pkg.instantiate()
 
-# include("app.jl")
+# include(joinpath(pwd(), "app.jl")) # !!! without joinpath, `app.jl` is resolved to `/app.jl`
 
 # using Jugsaw.Template: docker_config
 # using JugsawIR: julia2ir

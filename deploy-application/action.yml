@@ -39,6 +39,8 @@ runs:
     - id: extract-application-meta
       working-directory: ${{ inputs.dir }}
       uses: Jugsaw/github-actions/extract-application-meta@develop
+      with:
+        dir: ${{ inputs.dir }}
     - id: write-dockerfile
       working-directory: ${{ inputs.dir }}
       run: echo "${{ steps.extract-application-meta.outputs.dockerfile }}" >> Dockerfile
