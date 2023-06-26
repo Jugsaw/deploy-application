@@ -17,6 +17,7 @@ inputs:
   dir:
     description: "The directory to the application source code"
     required: false
+    default: "."
   tags:
     description: "The tags of applications"
     required: false
@@ -29,7 +30,6 @@ runs:
   steps:
     - id: extract-name
       run: |
-        echo "${{ inputs.dir }}"
         user=${{ inputs.user || github.repository_owner }}
         app=`basename ${{ inputs.app || inputs.dir || github.workspace }}`
         echo "app=$app" >> $GITHUB_OUTPUT
@@ -37,15 +37,24 @@ runs:
         echo "image=$user/$app" >> $GITHUB_OUTPUT
       shell: bash
     - id: extract-application-meta
+      working-directory: ${{ inputs.dir }}
       uses: Jugsaw/github-actions/extract-application-meta@develop
-      with:
-        dir: ${{ inputs.dir }}
+    - id: write-dockerfile
+      working-directory: ${{ inputs.dir }}
+      run: echo "${{ steps.extract-application-meta.outputs.dockerfile }}" >> Dockerfile
+      shell: bash
     - id: extract-docker-meta
       uses: docker/metadata-action@v4
       with:
         images: ${{ steps.extract-name.outputs.image }}
         tags: ${{ inputs.tags }}
+        labels: |
+          org.opencontainers.image.title=${{ steps.extract-name.outputs.app }}
+          jugsaw.demos=${{ steps.extract-application-meta.outputs.demos }}
+          jugsaw.types=${{ steps.extract-application-meta.outputs.types }}
+          jugsaw.readme=${{ steps.extract-application-meta.outputs.readme }}
     - id: deploy-to-jugsaw
+      working-directory: ${{ inputs.dir }}
       run: |
         echo "docker tags: ${{ steps.extract-docker-meta.outputs.tags }}"
         echo "docker labels: ${{ steps.extract-docker-meta.outputs.labels }}"
