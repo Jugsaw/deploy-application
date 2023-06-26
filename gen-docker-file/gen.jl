@@ -20,8 +20,8 @@ Pkg.instantiate()
 # """
 
 dockerfile = """
-ARG JULIA_VERSION=1
-FROM julia:$JULIA_VERSION
+FROM julia:1
+LABEL foo=bar
 """
 
 # https://docs.github.com/en/actions/using-workflows/workflow-commands-for-github-actions#multiline-strings
