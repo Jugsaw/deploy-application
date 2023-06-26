@@ -8,11 +8,11 @@ Pkg.instantiate()
 include(joinpath(pwd(), "app.jl")) # !!! without joinpath, `app.jl` is resolved to `/app.jl`
 
 using Jugsaw.Template: docker_config
-
-demos, types = JugsawIR.julia2ir(app)
-demos, types = escape_string(demos), escape_string(types)
+using JugsawIR: julia2ir
 
 dockerfile = docker_config(; juliaversion=VERSION)
+demos, types = julia2ir(app)
+demos, types = escape_string(demos), escape_string(types)
 
 # outputs
 DEMOS = "demos"
