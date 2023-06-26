@@ -22,6 +22,9 @@ outputs:
 runs:
   using: 'composite'
   steps:
+    - id: debug
+      run: ls .
+      shell: bash
     - id: gen-docker-file
       uses: ./actions/gen-docker-file
     - id: extract-app-name
