@@ -58,8 +58,8 @@ runs:
       uses: docker/login-action@v2
       with:
         registry: ${{ inputs.registry }}
-        username: jugsaw@${{ steps.extract-name.outputs.app }}
-        password: ${{ secrets.JUGSAW_TOKEN }}
+        username: "jugsaw@${{ steps.extract-name.outputs.user }}+default"
+        password: ${{ inputs.token }}
     - name: Deploy application to Jugsaw
       working-directory: ${{ inputs.dir }}
       run: |
