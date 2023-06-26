@@ -37,7 +37,6 @@ runs:
         echo "image=$user/$app" >> $GITHUB_OUTPUT
       shell: bash
     - id: extract-application-meta
-      working-directory: ${{ inputs.dir }}
       uses: Jugsaw/github-actions/extract-application-meta@develop
       with:
         dir: ${{ inputs.dir }}
