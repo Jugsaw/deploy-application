@@ -29,8 +29,9 @@ runs:
   steps:
     - id: extract-name
       run: |
+        echo "${{ inputs.dir }}"
         user=${{ inputs.user || github.repository_owner }}
-        app=`basename ${{ inputs.app || github.workspace }}`
+        app=`basename ${{ inputs.app || inputs.dir || github.workspace }}`
         echo "app=$app" >> $GITHUB_OUTPUT
         echo "user=$user" >> $GITHUB_OUTPUT
         echo "image=$user/$app" >> $GITHUB_OUTPUT
