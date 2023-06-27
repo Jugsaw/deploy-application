@@ -37,7 +37,7 @@ runs:
         echo "image=${{ inputs.registry }}/${user@L}/${app@L}" >> $GITHUB_OUTPUT
       shell: bash
     - id: extract-application-meta
-      uses: Jugsaw/github-actions/extract-application-meta@develop
+      uses: Jugsaw/github-actions/extract-application-meta@main
       with:
         dir: ${{ inputs.dir }}
     - id: extract-docker-meta
