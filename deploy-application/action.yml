@@ -22,19 +22,19 @@ inputs:
     description: "The tags of applications"
     required: false
 outputs:
-  app:
+  appID:
     description: 'The id of the deployed applications (`user_name/app_name@sha256:xxx` ). An empty string is returned if an application is deployed unsuccessfully.'
-    value: ${{ steps.deploy-to-jugsaw.outputs.app }}
+    value: ${{ steps.extract-name.outputs.image_base }}@${{ steps.deploy-to-jugsaw.outputs.digest }}
 runs:
   using: 'composite'
   steps:
     - id: extract-name
       run: |
         user=${{ inputs.user || github.repository_owner }}
-        app=`basename ${{ inputs.app || inputs.dir || github.workspace }}`
-        echo "app=${app@L}" >> $GITHUB_OUTPUT
+        app_name=`basename ${{ inputs.app || inputs.dir || github.workspace }}`
+        echo "app_name=${app_name@L}" >> $GITHUB_OUTPUT
         echo "user=${user@L}" >> $GITHUB_OUTPUT
-        echo "image=${{ inputs.registry }}/${user@L}/${app@L}" >> $GITHUB_OUTPUT
+        echo "image_base=${user@L}/${app_name@L}" >> $GITHUB_OUTPUT
       shell: bash
     - id: extract-application-meta
       uses: Jugsaw/github-actions/extract-application-meta@main
@@ -43,10 +43,10 @@ runs:
     - id: extract-docker-meta
       uses: docker/metadata-action@v4
       with:
-        images: ${{ steps.extract-name.outputs.image }}
+        images: ${{ inputs.registry }}/${{ steps.extract-name.outputs.image_base }}
         tags: ${{ inputs.tags }}
         labels: |
-          org.opencontainers.image.title=${{ steps.extract-name.outputs.app }}
+          org.opencontainers.image.title=${{ steps.extract-name.outputs.app_name }}
           jugsaw.demos=${{ steps.extract-application-meta.outputs.demos }}
           jugsaw.types=${{ steps.extract-application-meta.outputs.types }}
           jugsaw.readme=${{ steps.extract-application-meta.outputs.readme }}
@@ -65,6 +65,7 @@ runs:
         username: "jugsaw@${{ steps.extract-name.outputs.user }}+default"
         password: ${{ inputs.token }}
     - name: Deploy application to Jugsaw
+      id: deploy-to-jugsaw
       uses: docker/build-push-action@v4
       with:
         context: ${{ inputs.dir }}

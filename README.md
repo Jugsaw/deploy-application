@@ -7,13 +7,17 @@ This github action helps you deploy your application code to the Jugsaw server.
 | Name | Is Required? | Default Value | Description |
 |:----:|:------------:|:-------------:|:------------|
 | `token` | **Required** |   | The token to upload your application. You can find it in your profile page after logging in https://jugsaw.co |
-| `registry` | **Optional** | https://harbor.jugsaw.co | The url endpoint of the Jugsaw registry server. |
+| `registry` | **Optional** | harbor.jugsaw.co | The host of the Jugsaw registry server. |
+| `dir` | **Optional** | `.` | The relative directory to the source code of your Jugsaw application. |
+| `user` | **Optional** | | The default value is inferred from your github user (or organization) name |
+| `app` | **Optional** | | The default value is inferred from the repository name (or the basename of `dir` if it is set) |
+| `tags` | **Optional** | | Please refer [`tags` input](https://github.com/docker/metadata-action#tags-input) to understand how to set this field. This field lets your control the tag name of built docker image. |
 
 ## Outputs
 
 | Name | Example Value | Description |
 |:----:|:-------------:|:------------|
-| `app` | `user_name/app_name@sha256:xxx` | The id of the deployed applications. An empty string is returned if an application is deployed unsuccessfully. If multiple applications are provided, the application ids are concated with `;`. |
+| `appID` | `user_name/app_name@sha256:xxx` | The id of the deployed applications.|
 
 ## Example Usage
 
@@ -27,6 +31,4 @@ with:
 
 ## TODO
 
-- [ ] Tagging
-    Tag docker images with git tags.
-- [ ] Run local tests
+- [ ] Run local/remote tests
