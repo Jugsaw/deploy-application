@@ -64,5 +64,6 @@ runs:
       uses: docker/build-push-action@v4
       with:
         context: ${{ inputs.dir }}
+        push: ${{ github.event_name != 'pull_request' }}
         tags: ${{ steps.extract-docker-meta.outputs.tags }}
         labels: ${{ steps.extract-docker-meta.outputs.labels }}
