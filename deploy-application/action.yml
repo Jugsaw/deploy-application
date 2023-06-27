@@ -52,7 +52,11 @@ runs:
           jugsaw.readme=${{ steps.extract-application-meta.outputs.readme }}
     - name: Write Dockerfile
       working-directory: ${{ inputs.dir }}
-      run: echo "${{ steps.extract-application-meta.outputs.dockerfile }}" >> Dockerfile
+      run: |
+        EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+        tee Dockerfile <<'$EOF'
+        ${{ steps.extract-application-meta.outputs.dockerfile }}
+        $EOF
       shell: bash
     - name: Login to Jugsaw
       uses: docker/login-action@v2
