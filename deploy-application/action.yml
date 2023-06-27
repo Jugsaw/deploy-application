@@ -1,0 +1,74 @@
+name: 'Deploy Jugsaw Application'
+description: 'Deploy jugsaw applications to the cloud!'
+inputs:
+  token:
+    description: "The token to upload your application. You can find it in your profile page after logging in https://jugsaw.co"
+    required: true
+  registry:
+    description: "The url endpoint of the Jugsaw registry server."
+    required: false
+    default: 'harbor.jugsaw.co'
+  user:
+    description: "The user name at Jugsaw. The repository owner's name is used by default."
+    required: false
+  app:
+    description: "The name of the application to deploy. If not set, the value will be inferred from the basename of `github.workspace`."
+    required: false
+  dir:
+    description: "The directory to the application source code"
+    required: false
+    default: "."
+  tags:
+    description: "The tags of applications"
+    required: false
+outputs:
+  appID:
+    description: 'The id of the deployed applications (`user_name/app_name@sha256:xxx` ). An empty string is returned if an application is deployed unsuccessfully.'
+    value: ${{ steps.extract-name.outputs.image_base }}@${{ steps.deploy-to-jugsaw.outputs.digest }}
+runs:
+  using: 'composite'
+  steps:
+    - id: extract-name
+      run: |
+        user=${{ inputs.user || github.repository_owner }}
+        app_name=`basename ${{ inputs.app || inputs.dir || github.workspace }}`
+        echo "app_name=${app_name@L}" >> $GITHUB_OUTPUT
+        echo "user=${user@L}" >> $GITHUB_OUTPUT
+        echo "image_base=${user@L}/${app_name@L}" >> $GITHUB_OUTPUT
+      shell: bash
+    - id: extract-application-meta
+      uses: Jugsaw/github-actions/extract-application-meta@main
+      with:
+        dir: ${{ inputs.dir }}
+    - id: extract-docker-meta
+      uses: docker/metadata-action@v4
+      with:
+        images: ${{ inputs.registry }}/${{ steps.extract-name.outputs.image_base }}
+        tags: ${{ inputs.tags }}
+        labels: |
+          org.opencontainers.image.title=${{ steps.extract-name.outputs.app_name }}
+          jugsaw.demos=${{ steps.extract-application-meta.outputs.demos }}
+          jugsaw.types=${{ steps.extract-application-meta.outputs.types }}
+          jugsaw.readme=${{ steps.extract-application-meta.outputs.readme }}
+    - name: Write Dockerfile
+      working-directory: ${{ inputs.dir }}
+      run: |
+        EOF=$(dd if=/dev/urandom bs=15 count=1 status=none | base64)
+        tee Dockerfile <<'$EOF'
+        ${{ steps.extract-application-meta.outputs.dockerfile }}
+        $EOF
+      shell: bash
+    - name: Login to Jugsaw
+      uses: docker/login-action@v2
+      with:
+        registry: ${{ inputs.registry }}
+        username: "jugsaw@${{ steps.extract-name.outputs.user }}+default"
+        password: ${{ inputs.token }}
+    - name: Deploy application to Jugsaw
+      id: deploy-to-jugsaw
+      uses: docker/build-push-action@v4
+      with:
+        context: ${{ inputs.dir }}
+        push: ${{ github.event_name != 'pull_request' }}
+        tags: ${{ steps.extract-docker-meta.outputs.tags }}
+        labels: ${{ steps.extract-docker-meta.outputs.labels }}
