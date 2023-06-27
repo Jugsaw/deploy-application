@@ -14,7 +14,11 @@ using Pkg
 # demos, types = julia2ir(app)
 # demos, types = escape_string(demos), escape_string(types)
 
-dockerfile = "A"
+dockerfile = """
+FROM julia:1
+COPY . /app
+"""
+
 demos, types = "B", "C"
 readme = "readme"
 
