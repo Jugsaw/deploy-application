@@ -61,9 +61,8 @@ runs:
         username: "jugsaw@${{ steps.extract-name.outputs.user }}+default"
         password: ${{ inputs.token }}
     - name: Deploy application to Jugsaw
-      working-directory: ${{ inputs.dir }}
-      run: |
-        echo "docker tags: ${{ steps.extract-docker-meta.outputs.tags }}"
-        echo "docker labels: ${{ steps.extract-docker-meta.outputs.labels }}"
-        echo "app=${{ steps.extract-name.outputs.image }}@sha256:xxx" >> $GITHUB_OUTPUT
-      shell: bash
+      uses: docker/build-push-action@v4
+      with:
+        context: ${{ inputs.dir }}
+        tags: ${{ steps.extract-docker-meta.outputs.tags }}
+        labels: ${{ steps.extract-docker-meta.outputs.labels }}
