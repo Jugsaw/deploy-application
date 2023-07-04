@@ -12,8 +12,7 @@ using JugsawIR: julia2ir
 
 dockerfile = docker_config(; juliaversion=VERSION)
 demos, types = julia2ir(Jugsaw.APP)
-demos, types = escape_string(demos), escape_string(types)
-readme = "TODO"
+readme = isfile("README.md") ? read("README.md", String) : ""
 
 # outputs
 DEMOS = "demos"
