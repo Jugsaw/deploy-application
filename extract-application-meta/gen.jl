@@ -11,7 +11,7 @@ using Jugsaw.Template: docker_config
 using JugsawIR: julia2ir
 
 dockerfile = docker_config(; juliaversion=VERSION)
-demos, types = julia2ir(app)
+demos, types = julia2ir(Jugsaw.APP)
 demos, types = escape_string(demos), escape_string(types)
 readme = "TODO"
 
